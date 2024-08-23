@@ -44,6 +44,16 @@ class FlutterCallkitIncomingPlugin : FlutterPlugin, MethodCallHandler, ActivityA
             eventHandlers.reapCollection().forEach {
                 it.get()?.send(event, body)
             }
+
+            if (event == CallkitConstants.ACTION_CALL_DECLINE) {
+                for ((name, channel) in methodChannels) {
+                    try {
+                        channel.invokeMethod("CALL_DECLINED_CUSTOM", "")
+                    } catch (e: Exception) {
+                        Log.d(EXTRA_CALLKIT_CALL_DATA, e.toString())
+                    }
+                }
+            }
         }
 
         public fun sendEventCustom(event: String, body: Map<String, Any>) {
@@ -140,16 +150,6 @@ class FlutterCallkitIncomingPlugin : FlutterPlugin, MethodCallHandler, ActivityA
     public fun sendEventCustom(body: Map<String, Any>) {
         eventHandlers.reapCollection().forEach {
             it.get()?.send(CallkitConstants.ACTION_CALL_CUSTOM, body)
-        }
-
-        if (event == CallkitConstants.ACTION_CALL_DECLINE) {
-        for ((name, channel) in methodChannels) {
-            try {
-                channel.invokeMethod("CALL_DECLINED_CUSTOM", "")
-            } catch (e: Exception) {
-                Log.d(EXTRA_CALLKIT_CALL_DATA, e.toString())
-            }
-        }
         }
     }
 
